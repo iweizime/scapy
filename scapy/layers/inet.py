@@ -259,6 +259,7 @@ TCPOptions = (
      15: ("AltChkSumOpt", None),
      25: ("Mood", "!p"),
      28: ("UTO", "!H"),
+     29: ("AO", "!"),
      34: ("TFO", "!II"),
      # RFC 3692
      # 253: ("Experiment", "!HHHH"),
@@ -275,6 +276,7 @@ TCPOptions = (
      "AltChkSumOpt": 15,
      "Mood": 25,
      "UTO": 28,
+     "AO": 29,
      "TFO": 34,
      })
 
@@ -351,6 +353,8 @@ class TCPOptionsField(StrField):
                 oname, ofmt = TCPOptions[0][onum]
                 if onum == 5:  # SAck
                     ofmt += "%iI" % (len(oval) // 4)
+                elif onum == 29:  # AO
+                    ofmt += "%is" % len(oval)
                 if ofmt and struct.calcsize(ofmt) == len(oval):
                     oval = struct.unpack(ofmt, oval)
                     if len(oval) == 1:
@@ -383,6 +387,8 @@ class TCPOptionsField(StrField):
                     ofmt = TCPOptions[0][onum][1]
                     if onum == 5:  # SAck
                         ofmt += "%iI" % len(oval)
+                    elif onum == 29:  # AO
+                        ofmt += "%is" % len(oval)
                     _test_isinstance = not isinstance(oval, (bytes, str))
                     if ofmt is not None and (_test_isinstance or "s" in ofmt):
                         if not isinstance(oval, tuple):
